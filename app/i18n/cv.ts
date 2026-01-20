@@ -86,7 +86,7 @@ export const CV_TEXT: Record<
       goalText:
         "работа като Frontend Developer, с възможност да допринасям и по API/интеграции.",
       values: {
-        location: "България (дистанционно)",
+        location: "България / дистанционно",
         level: "Junior → Mid",
         languages: "BG / EN",
         interests: "E-commerce, performance, clean UI",
@@ -159,7 +159,7 @@ export const CV_TEXT: Record<
       goalText:
         "a Frontend Developer role with room to contribute to APIs and integrations.",
       values: {
-        location: "Bulgaria (remote)",
+        location: "Bulgaria / remote",
         level: "Junior → Mid",
         languages: "BG / EN",
         interests: "E-commerce, performance, clean UI",

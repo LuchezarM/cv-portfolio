@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { CV_TEXT, Lang } from "./i18n/cv";
 import { motion, AnimatePresence } from "framer-motion";
 import { projects } from "./cv/projects";
@@ -29,6 +29,32 @@ const experience = [
     bulletsKey: "dev",
   },
 ];
+
+/* ---------------------------------------------
+   HELPERS
+--------------------------------------------- */
+
+function useIsDesktop(breakpointPx = 768) {
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia(`(min-width: ${breakpointPx}px)`);
+    const onChange = () => setIsDesktop(mq.matches);
+    onChange();
+    mq.addEventListener?.("change", onChange);
+    return () => mq.removeEventListener?.("change", onChange);
+  }, [breakpointPx]);
+
+  return isDesktop;
+}
+
+function openExternal(href: string) {
+  if (href.startsWith("mailto:")) {
+    window.location.href = href;
+    return;
+  }
+  window.open(href, "_blank", "noopener,noreferrer");
+}
 
 /* ---------------------------------------------
    PAGE
@@ -72,21 +98,15 @@ export default function Page() {
               {t.meta.available}
             </div>
 
-            <div className="flex items-center gap-8">
+            <div className="flex items-center gap-4 sm:gap-8">
               <LangToggle lang={lang} setLang={setLang} />
-              {/* <a
-                href="/cv.pdf"
-                className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm hover:bg-white/10"
-              >
-                {t.top.download}
-              </a> */}
             </div>
           </div>
         </div>
 
         {/* HERO */}
         <section className="grid gap-6 md:grid-cols-[1.15fr_0.85fr]">
-          <div className="relative rounded-3xl border border-white/10 bg-linear-to-b from-white/10 to-white/5 p-8">
+          <div className="relative rounded-3xl border border-white/10 bg-linear-to-b from-white/10 to-white/5 p-6 sm:p-8">
             <h1 className="text-4xl font-semibold md:text-5xl">
               {t.meta.name}
             </h1>
@@ -118,6 +138,13 @@ export default function Page() {
                 previewText="luchezar-mitov"
                 accent="blue"
               />
+
+              <SocialLinkWithPreview
+                href="https://www.figma.com/design/93lNizPrBoHwLDpZRGUgA6/%D0%B2%D0%BE%D0%B4%D0%B0-%D0%91%D0%B0%D1%87%D0%BA%D0%BE%D0%B2%D0%BE?node-id=0-1&t=w1iAzHyo1DfSZVxP-1"
+                label="Figma"
+                previewTitle="Figma Profile"
+                previewText="figma.com/LuchezarM"
+              />
             </div>
 
             <div className="mt-8 grid gap-3 sm:grid-cols-3">
@@ -128,7 +155,7 @@ export default function Page() {
           </div>
 
           {/* SNAPSHOT */}
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-8">
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 sm:p-8">
             <h2 className="text-lg font-semibold">{t.snapshot.title}</h2>
 
             <div className="mt-5 space-y-3 text-sm text-zinc-300">
@@ -153,7 +180,6 @@ export default function Page() {
             title={t.sections.skills.title}
             subtitle={t.sections.skills.subtitle}
           />
-
           <SkillsLoop items={skills} />
         </section>
 
@@ -230,20 +256,6 @@ export default function Page() {
 
                 <div className="mt-6 flex gap-3">
                   <LiveButtonWithPreview href={p.live} label={t.ctas.live} />
-
-                  {/* {p.repo ? (
-                    <Link
-                      href={p.repo}
-                      target="_blank"
-                      className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm"
-                    >
-                      {t.ctas.code}
-                    </Link>
-                  ) : (
-                    <span className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-zinc-500">
-                      {t.ctas.codePrivate}
-                    </span>
-                  )} */}
                 </div>
               </div>
             ))}
@@ -325,6 +337,13 @@ function Line({ k, v }: { k: string; v: string }) {
   );
 }
 
+/* ---------------------------------------------
+   Social Link (mobile-first preview sheet)
+   - Mobile: tap opens bottom sheet preview (friendly)
+   - Desktop: keep your exact hover tooltip styling
+   - Clicking "Open" closes preview automatically ✅
+--------------------------------------------- */
+
 function SocialLinkWithPreview({
   href,
   label,
@@ -338,7 +357,13 @@ function SocialLinkWithPreview({
   previewText: string;
   accent?: "emerald" | "violet" | "blue" | "amber";
 }) {
+  const isDesktop = useIsDesktop();
   const [open, setOpen] = useState(false);
+
+  // close on desktop when leaving; on mobile only via user action
+  useEffect(() => {
+    if (isDesktop) setOpen(false);
+  }, [isDesktop]);
 
   const domain = (() => {
     try {
@@ -362,24 +387,40 @@ function SocialLinkWithPreview({
     amber: "from-amber-400/30 via-yellow-300/10 to-transparent",
   };
 
+  const handleOpenLink = useCallback(() => {
+    setOpen(false); // ✅ close automatically
+    openExternal(href);
+  }, [href]);
+
   return (
     <div
       className="relative inline-block"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
-      onFocus={() => setOpen(true)}
-      onBlur={() => setOpen(false)}
+      onMouseEnter={isDesktop ? () => setOpen(true) : undefined}
+      onMouseLeave={isDesktop ? () => setOpen(false) : undefined}
+      onFocus={isDesktop ? () => setOpen(true) : undefined}
+      onBlur={isDesktop ? () => setOpen(false) : undefined}
     >
+      {/* Desktop: your original link (unchanged) */}
       <Link
         href={href}
         target="_blank"
-        className="rounded-xl border border-white/10 bg-black/30 px-4 py-2 text-sm transition hover:bg-white/10 hover:scale-105"
+        className="hidden md:inline-flex rounded-xl border border-white/10 bg-black/30 px-4 py-2 text-sm transition hover:bg-white/10 hover:scale-105"
       >
         {label}
       </Link>
 
+      {/* Mobile: tap button opens preview sheet */}
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="md:hidden inline-flex rounded-xl border border-white/10 bg-black/30 px-4 py-2 text-sm transition active:scale-[.98] hover:bg-white/10"
+      >
+        {label}
+      </button>
+
+      {/* Desktop tooltip (kept style) */}
       <AnimatePresence>
-        {open && (
+        {open && isDesktop && (
           <motion.div
             initial={{ opacity: 0, y: 10, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -424,9 +465,103 @@ function SocialLinkWithPreview({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Mobile bottom sheet preview */}
+      <AnimatePresence>
+        {open && !isDesktop && (
+          <motion.div
+            className="fixed inset-0 z-60"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            {/* overlay */}
+            <div
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setOpen(false)}
+            />
+
+            {/* sheet */}
+            <motion.div
+              initial={{ y: 24, opacity: 0, scale: 0.98 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: 24, opacity: 0, scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 420, damping: 32 }}
+              className="absolute inset-x-0 bottom-0 mx-auto w-full max-w-md px-4 pb-6"
+            >
+              <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-black/85 p-4 shadow-[0_30px_90px_rgba(0,0,0,0.8)] backdrop-blur-md">
+                <div
+                  className={`pointer-events-none absolute inset-0 bg-linear-to-br ${accentMap[accent]}`}
+                />
+                <div
+                  className="pointer-events-none absolute inset-0 opacity-[0.06]
+                  [background-image:linear-gradient(to_right,white_1px,transparent_1px),
+                  linear-gradient(to_bottom,white_1px,transparent_1px)]
+                  bg-size-[24px_24px]"
+                />
+
+                <div className="relative flex items-start gap-3">
+                  <div className="h-11 w-11 shrink-0 rounded-2xl border border-white/10 bg-white/5 flex items-center justify-center">
+                    <img
+                      src={favicon}
+                      alt=""
+                      className="h-6 w-6"
+                      loading="lazy"
+                    />
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <p className="text-base font-semibold text-zinc-100">
+                      {previewTitle}
+                    </p>
+                    <p className="mt-1 text-sm text-zinc-300 break-all">
+                      {previewText}
+                    </p>
+                    {domain ? (
+                      <p className="mt-2 text-xs text-zinc-400">{domain}</p>
+                    ) : null}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setOpen(false)}
+                    className="shrink-0 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-zinc-200 active:scale-[.98]"
+                  >
+                    Close
+                  </button>
+                </div>
+
+                <div className="relative mt-4 grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setOpen(false)}
+                    className="rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-zinc-200 active:scale-[.98]"
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleOpenLink}
+                    className="rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-black active:scale-[.98]"
+                  >
+                    Open
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
+
+/* ---------------------------------------------
+   Live Button (mobile-first preview sheet)
+   - Mobile: tap opens sheet, "Open" closes automatically ✅
+   - Desktop: keep your tooltip style (unchanged)
+--------------------------------------------- */
 
 function LiveButtonWithPreview({
   href,
@@ -435,7 +570,12 @@ function LiveButtonWithPreview({
   href: string;
   label: string;
 }) {
+  const isDesktop = useIsDesktop();
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (isDesktop) setOpen(false);
+  }, [isDesktop]);
 
   const domain = (() => {
     try {
@@ -450,14 +590,20 @@ function LiveButtonWithPreview({
     ? `https://www.google.com/s2/favicons?domain=${domain}&sz=64`
     : "";
 
+  const handleOpenLink = useCallback(() => {
+    setOpen(false); // ✅ close automatically
+    openExternal(href);
+  }, [href]);
+
   return (
     <div
       className="relative inline-block"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
-      onFocus={() => setOpen(true)}
-      onBlur={() => setOpen(false)}
+      onMouseEnter={isDesktop ? () => setOpen(true) : undefined}
+      onMouseLeave={isDesktop ? () => setOpen(false) : undefined}
+      onFocus={isDesktop ? () => setOpen(true) : undefined}
+      onBlur={isDesktop ? () => setOpen(false) : undefined}
     >
+      {/* Desktop: keep your exact motion.a */}
       <motion.a
         href={href}
         target="_blank"
@@ -465,14 +611,24 @@ function LiveButtonWithPreview({
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.95 }}
         transition={{ type: "spring", stiffness: 300, damping: 18 }}
-        className="relative overflow-hidden rounded-xl bg-white px-4 py-2 text-sm font-semibold text-black"
+        className="hidden md:inline-flex relative overflow-hidden rounded-xl bg-white px-4 py-2 text-sm font-semibold text-black"
       >
         <span className="pointer-events-none absolute inset-0 opacity-0 hover:opacity-100 transition duration-300 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.8),transparent_60%)]" />
         <span className="relative z-10">{label}</span>
       </motion.a>
 
+      {/* Mobile: tap opens sheet */}
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="md:hidden inline-flex relative overflow-hidden rounded-xl bg-white px-4 py-2 text-sm font-semibold text-black active:scale-[.98]"
+      >
+        {label}
+      </button>
+
+      {/* Desktop tooltip (unchanged style) */}
       <AnimatePresence>
-        {open && (
+        {open && isDesktop && (
           <motion.div
             initial={{ opacity: 0, y: 10, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -516,6 +672,105 @@ function LiveButtonWithPreview({
 
               <div className="absolute left-1/2 -bottom-1.5 h-3.5 w-3.5 -translate-x-1/2 rotate-45 border-b border-r border-white/10 bg-black/85" />
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Mobile bottom sheet */}
+      <AnimatePresence>
+        {open && !isDesktop && (
+          <motion.div
+            className="fixed inset-0 z-60"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <div
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setOpen(false)}
+            />
+
+            <motion.div
+              initial={{ y: 24, opacity: 0, scale: 0.98 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: 24, opacity: 0, scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 420, damping: 32 }}
+              className="absolute inset-x-0 bottom-0 mx-auto w-full max-w-md px-4 pb-6"
+            >
+              <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-black/85 p-4 shadow-[0_30px_90px_rgba(0,0,0,0.8)] backdrop-blur-md">
+                <div
+                  className="pointer-events-none absolute inset-0 opacity-[0.06]
+                  [background-image:linear-gradient(to_right,white_1px,transparent_1px),
+                  linear-gradient(to_bottom,white_1px,transparent_1px)]
+                  bg-size-[24px_24px]"
+                />
+
+                <div className="relative flex items-start gap-3">
+                  <div className="h-11 w-11 shrink-0 rounded-2xl border border-white/10 bg-white/5 flex items-center justify-center">
+                    <img src={favicon} alt="" className="h-6 w-6" />
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <p className="text-base font-semibold text-zinc-100">
+                      Live preview
+                    </p>
+                    <p className="mt-1 text-sm text-zinc-300 break-all">
+                      {href}
+                    </p>
+                    {domain ? (
+                      <p className="mt-2 text-xs text-zinc-400">{domain}</p>
+                    ) : null}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setOpen(false)}
+                    className="shrink-0 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-zinc-200 active:scale-[.98]"
+                  >
+                    Close
+                  </button>
+                </div>
+
+                {/* mini preview (mobile friendly) */}
+                <div className="relative mt-4 overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+                  <div className="h-7 border-b border-white/10 bg-black/30 flex items-center gap-1 px-2">
+                    <span className="h-2 w-2 rounded-full bg-red-400/60" />
+                    <span className="h-2 w-2 rounded-full bg-yellow-400/60" />
+                    <span className="h-2 w-2 rounded-full bg-green-400/60" />
+                    <span className="ml-2 text-[10px] text-zinc-300 truncate">
+                      {domain || "preview"}
+                    </span>
+                  </div>
+                  <div className="p-3">
+                    <div className="h-2 w-3/4 rounded bg-white/10" />
+                    <div className="mt-2 h-2 w-2/3 rounded bg-white/10" />
+                    <div className="mt-4 grid grid-cols-3 gap-2">
+                      <div className="h-10 rounded bg-white/10" />
+                      <div className="h-10 rounded bg-white/10" />
+                      <div className="h-10 rounded bg-white/10" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="relative mt-4 grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setOpen(false)}
+                    className="rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-zinc-200 active:scale-[.98]"
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleOpenLink}
+                    className="rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-black active:scale-[.98]"
+                  >
+                    Open
+                  </button>
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
