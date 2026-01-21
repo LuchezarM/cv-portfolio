@@ -73,7 +73,7 @@ export const CV_TEXT: Record<
       },
       projects: {
         title: "Проекти",
-        subtitle: "Най-силното ти оръжие като дев",
+        subtitle: "",
       },
     },
     snapshot: {
@@ -146,7 +146,7 @@ export const CV_TEXT: Record<
       },
       projects: {
         title: "Projects",
-        subtitle: "Your strongest proof as a developer",
+        subtitle: "",
       },
     },
     snapshot: {
