@@ -123,6 +123,8 @@ export const CV_TEXT: Record<
         "Лендинг страница за услуга с фокус върху UX, performance и lead generation.",
       crm_system:
         "Лендинг страница за услуга с фокус върху UX, performance и lead generation.",
+        ioana:
+        "Linktree-подобна страница с чист дизайн, бърза скорост и страхотен UX.",
     },
   },
 
@@ -196,6 +198,8 @@ export const CV_TEXT: Record<
         "Landing page for a service with focus on UX, performance and lead generation.",
       crm_system:
         "Landing page for a service with focus on UX, performance and lead generation.",
+        ioana:
+        "Linktree-like landing page with clean design, fast performance and great UX.",
     },
   },
 };

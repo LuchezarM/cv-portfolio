@@ -3,6 +3,7 @@
 export type Project = {
   name: string;
   descKey:
+    | "ioana"
     | "bookish"
     | "nestx"
     | "godeutschland"
@@ -16,6 +17,13 @@ export type Project = {
 };
 
 export const projects: Project[] = [
+  {
+    name: "Linktree Ioanna",
+    descKey: "ioana",
+    tags: ["Next.js", "Landing Page", "UI/UX"],
+    live: "https://linktree-ioanna.vercel.app",
+    repo: "",
+  },
   {
     name: "Bookish Flame — E-commerce",
     descKey: "bookish",
