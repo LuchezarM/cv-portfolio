@@ -1,6 +1,9 @@
 // app/i18n/cv.ts
 
+import type { Project } from "../cv/projects"; // ✅ adjust if your projects file is elsewhere
+
 export type Lang = "bg" | "en";
+type DescKey = Project["descKey"];
 
 export const CV_TEXT: Record<
   Lang,
@@ -49,8 +52,8 @@ export const CV_TEXT: Record<
       built: string;
     };
 
-    // ✅ NEW
-    projectsDesc: Record<string, string>;
+    // ✅ typed by your Project.descKey union
+    projectsDesc: Record<DescKey, string>;
   }
 > = {
   bg: {
@@ -107,8 +110,9 @@ export const CV_TEXT: Record<
       built: "Built with Next.js + Tailwind",
     },
 
-    // ✅ NEW
     projectsDesc: {
+      ioana:
+        "Linktree-подобна страница с чист дизайн, бърза скорост и страхотен UX.",
       bookish:
         "Онлайн магазин с количка, checkout, admin панел, Stripe плащания и Еконт интеграция.",
       nestx:
@@ -123,8 +127,6 @@ export const CV_TEXT: Record<
         "Лендинг страница за услуга с фокус върху UX, performance и lead generation.",
       crm_system:
         "Лендинг страница за услуга с фокус върху UX, performance и lead generation.",
-        ioana:
-        "Linktree-подобна страница с чист дизайн, бърза скорост и страхотен UX.",
     },
   },
 
@@ -182,8 +184,9 @@ export const CV_TEXT: Record<
       built: "Built with Next.js + Tailwind",
     },
 
-    // ✅ NEW
     projectsDesc: {
+      ioana:
+        "Linktree-like landing page with clean design, fast performance and great UX.",
       bookish:
         "E-commerce platform with cart, checkout, admin panel, Stripe payments and Econt integration.",
       nestx:
@@ -198,8 +201,6 @@ export const CV_TEXT: Record<
         "Landing page for a service with focus on UX, performance and lead generation.",
       crm_system:
         "Landing page for a service with focus on UX, performance and lead generation.",
-        ioana:
-        "Linktree-like landing page with clean design, fast performance and great UX.",
     },
   },
 };
