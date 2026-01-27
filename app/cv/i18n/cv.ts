@@ -1,6 +1,6 @@
-// app/i18n/cv.ts
+// app/cv/i18n/cv.ts
+import type { Project } from "../projects";
 
-import type { Project } from "../cv/projects"; // ✅ adjust if your projects file is elsewhere
 
 export type Lang = "bg" | "en";
 type DescKey = Project["descKey"];
