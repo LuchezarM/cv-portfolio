@@ -47,7 +47,7 @@ export default function Hero({ t }: { t: any }) {
       </div>
 
       <div className="mt-8 grid gap-3 sm:grid-cols-3">
-        <Stat label={t.stats.shipped} value="6+" />
+        <Stat label={t.stats.shipped} value="10+" />
         <Stat label={t.stats.stack} value="Next.js" />
         <Stat label={t.stats.focus} value="UI + APIs" />
       </div>

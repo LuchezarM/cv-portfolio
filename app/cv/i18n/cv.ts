@@ -111,6 +111,8 @@ export const CV_TEXT: Record<
     },
 
     projectsDesc: {
+      bitcoin_game:
+        "Забавна игра, изградена с Next.js, демонстрираща интерактивен UI и ангажиращо потребителско изживяване.",
       leadflow:
         "Концептуален UI за SaaS продукт с фокус върху дизайн, UX и бърза скорост.",
       ioana:
@@ -187,6 +189,8 @@ export const CV_TEXT: Record<
     },
 
     projectsDesc: {
+      bitcoin_game:
+        "A fun game built with Next.js, showcasing interactive UI and engaging user experience.",
       leadflow:
         "Concept UI for a SaaS product focused on design, UX and fast performance.",
       ioana:

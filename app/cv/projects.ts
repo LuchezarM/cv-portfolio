@@ -3,7 +3,8 @@
 export type Project = {
   name: string;
   descKey:
-   | "leadflow"
+    | "leadflow"
+    | "bitcoin_game"
     | "ioana"
     | "bookish"
     | "nestx"
@@ -23,6 +24,13 @@ export const projects: Project[] = [
     descKey: "leadflow",
     tags: ["Next.js", "SaaS", "UI/UX"],
     live: "https://leadflow-enterprise.vercel.app",
+    repo: "",
+  },
+  {
+    name: "Bitcoin Game",
+    descKey: "bitcoin_game",
+    tags: ["Next.js", "Game"],
+    live: "https://bitcoin-game-one.vercel.app",
     repo: "",
   },
   {
