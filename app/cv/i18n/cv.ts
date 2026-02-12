@@ -111,6 +111,8 @@ export const CV_TEXT: Record<
     },
 
     projectsDesc: {
+      leadflow:
+        "Концептуален UI за SaaS продукт с фокус върху дизайн, UX и бърза скорост.",
       ioana:
         "Linktree-подобна страница с чист дизайн, бърза скорост и страхотен UX.",
       bookish:
@@ -185,6 +187,8 @@ export const CV_TEXT: Record<
     },
 
     projectsDesc: {
+      leadflow:
+        "Concept UI for a SaaS product focused on design, UX and fast performance.",
       ioana:
         "Linktree-like landing page with clean design, fast performance and great UX.",
       bookish:

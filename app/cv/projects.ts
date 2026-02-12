@@ -3,6 +3,7 @@
 export type Project = {
   name: string;
   descKey:
+   | "leadflow"
     | "ioana"
     | "bookish"
     | "nestx"
@@ -17,6 +18,13 @@ export type Project = {
 };
 
 export const projects: Project[] = [
+  {
+    name: "LeadFlow (Concept UI)",
+    descKey: "leadflow",
+    tags: ["Next.js", "SaaS", "UI/UX"],
+    live: "https://leadflow-enterprise.vercel.app",
+    repo: "",
+  },
   {
     name: "Linktree Ioanna",
     descKey: "ioana",
